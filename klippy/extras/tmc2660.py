@@ -59,37 +59,37 @@ Fields["DRVCONF"] = {
 
 Fields["READRSP@RDSEL0"] = {
     "SG": 0x01,
-    "OT": 0x01 << 1,
-    "OTPW": 0x01 << 2,
-    "S2GA": 0x01 << 3,
-    "S2GB": 0x01 << 4,
-    "OLA": 0x01 << 5,
-    "OLB": 0x01 << 6,
-    "STST": 0x01 << 7,
+    "ot": 0x01 << 1,
+    "otpw": 0x01 << 2,
+    "s2ga": 0x01 << 3,
+    "s2gb": 0x01 << 4,
+    "ola": 0x01 << 5,
+    "olb": 0x01 << 6,
+    "stst": 0x01 << 7,
     "MSTEP": 0x3ff << 10
 }
 
 Fields["READRSP@RDSEL1"] = {
     "SG": 0x01,
-    "OT": 0x01 << 1,
-    "OTPW": 0x01 << 2,
-    "S2GA": 0x01 << 3,
-    "S2GB": 0x01 << 4,
-    "OLA": 0x01 << 5,
-    "OLB": 0x01 << 6,
-    "STST": 0x01 << 7,
+    "ot": 0x01 << 1,
+    "otpw": 0x01 << 2,
+    "s2ga": 0x01 << 3,
+    "s2gb": 0x01 << 4,
+    "ola": 0x01 << 5,
+    "olb": 0x01 << 6,
+    "stst": 0x01 << 7,
     "SG@RDSEL1": 0x3ff << 10
 }
 
 Fields["READRSP@RDSEL2"] = {
     "SG": 0x01,
-    "OT": 0x01 << 1,
-    "OTPW": 0x01 << 2,
-    "S2GA": 0x01 << 3,
-    "S2GB": 0x01 << 4,
-    "OLA": 0x01 << 5,
-    "OLB": 0x01 << 6,
-    "STST": 0x01 << 7,
+    "ot": 0x01 << 1,
+    "otpw": 0x01 << 2,
+    "s2ga": 0x01 << 3,
+    "s2gb": 0x01 << 4,
+    "ola": 0x01 << 5,
+    "olb": 0x01 << 6,
+    "stst": 0x01 << 7,
     "SG@RDSEL2": 0x1f << 15,
     "SE": 0x1f << 10
 }
