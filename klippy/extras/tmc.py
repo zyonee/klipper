@@ -110,22 +110,20 @@ class TMCErrorCheck:
         count = 0
         while 1:
             val = self.mcu_tmc.get_register(reg_name)
-            if val & mask == last_value & mask:
-                # No change
-                break
-            fmt = self.fields.pretty_format(reg_name, val)
-            logging.info("TMC '%s' reports %s", self.stepper_name, fmt)
+            if val & mask != last_value & mask:
+                fmt = self.fields.pretty_format(reg_name, val)
+                logging.info("TMC '%s' reports %s", self.stepper_name, fmt)
+                reg_info[0] = last_value = val
             if not val & err_mask:
                 break
             count += 1
             if count >= 3:
-                raise self.printer.command_error("TMC '%s' reports error: %s",
-                                                 self.stepper_name, fmt)
+                fmt = self.fields.pretty_format(reg_name, val)
+                raise self.printer.command_error("TMC '%s' reports error: %s"
+                                                 % (self.stepper_name, fmt))
             if try_clear:
                 try_clear = False
                 self.mcu_tmc.set_register(reg_name, val & err_mask)
-            last_value = val
-        reg_info[0] = val
     def _do_periodic_check(self, eventtime, try_clear=False):
         try:
             self._query_register(self.drv_status_reg_info)
@@ -133,6 +131,7 @@ class TMCErrorCheck:
                 self._query_register(self.gstat_reg_info, try_clear=try_clear)
         except self.printer.command_error as e:
             self.printer.invoke_shutdown(str(e))
+            return self.printer.get_reactor().NEVER
         return eventtime + 1.
     def stop_checks(self):
         if self.check_timer is None:
