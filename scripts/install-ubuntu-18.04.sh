@@ -96,7 +96,7 @@ SRCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. && pwd )"
 
 # Run installation steps defined above
 verify_ready
-install_packages
+#install_packages
 create_virtualenv
-install_script
-start_software
+#install_script
+#start_software

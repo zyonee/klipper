@@ -3,7 +3,7 @@
 #  unattended firmware updates on boards with "SD Card" bootloaders
 
 # Non-standard installations may need to change this location
-KLIPPY_ENV="${HOME}/klippy-env/bin/python"
+KLIPPY_ENV="/home/octoprint/klippy-env/bin/python"
 SRCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. && pwd )"
 KLIPPER_BIN="${SRCDIR}/out/klipper.bin"
 SPI_FLASH="${SRCDIR}/scripts/spi_flash/spi_flash.py"
