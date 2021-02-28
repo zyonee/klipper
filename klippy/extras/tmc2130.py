@@ -74,6 +74,7 @@ SignedFields = ["CUR_A", "CUR_B", "sgt"]
 FieldFormatters = {
     "I_scale_analog":   (lambda v: "1(ExtVREF)" if v else ""),
     "shaft":            (lambda v: "1(Reverse)" if v else ""),
+    "reset":            (lambda v: "1(Reset)" if v else ""),
     "drv_err":          (lambda v: "1(ErrorShutdown!)" if v else ""),
     "uv_cp":            (lambda v: "1(Undervoltage!)" if v else ""),
     "VERSION":          (lambda v: "%#x" % v),
@@ -108,10 +109,6 @@ class TMCCurrentHelper:
         self.fields.set_field("vsense", vsense)
         self.fields.set_field("IHOLD", ihold)
         self.fields.set_field("IRUN", irun)
-        gcode = self.printer.lookup_object("gcode")
-        gcode.register_mux_command("SET_TMC_CURRENT", "STEPPER", self.name,
-                                   self.cmd_SET_TMC_CURRENT,
-                                   desc=self.cmd_SET_TMC_CURRENT_help)
     def _calc_current_bits(self, current, vsense):
         sense_resistor = self.sense_resistor + 0.020
         vref = 0.32
@@ -137,26 +134,12 @@ class TMCCurrentHelper:
         vref = 0.32
         if self.fields.get_field("vsense"):
             vref = 0.18
-        current = (bits + 1) * vref / (32 * sense_resistor * math.sqrt(2.))
-        return round(current, 2)
-    cmd_SET_TMC_CURRENT_help = "Set the current of a TMC driver"
-    def cmd_SET_TMC_CURRENT(self, gcmd):
-        run_current = gcmd.get_float('CURRENT', None,
-                                     minval=0., maxval=MAX_CURRENT)
-        hold_current = gcmd.get_float('HOLDCURRENT', None,
-                                      above=0., maxval=MAX_CURRENT)
-        if run_current is None and hold_current is None:
-            # Query only
-            run_current = self._calc_current_from_field("IRUN")
-            hold_current = self._calc_current_from_field("IHOLD")
-            gcmd.respond_info("Run Current: %0.2fA Hold Current: %0.2fA"
-                              % (run_current, hold_current))
-            return
-        if run_current is None:
-            run_current = self._calc_current_from_field("IRUN")
-        if hold_current is None:
-            hold_current = self._calc_current_from_field("IHOLD")
-        print_time = self.printer.lookup_object('toolhead').get_last_move_time()
+        return (bits + 1) * vref / (32 * sense_resistor * math.sqrt(2.))
+    def get_current(self):
+        run_current = self._calc_current_from_field("IRUN")
+        hold_current = self._calc_current_from_field("IHOLD")
+        return run_current, hold_current, MAX_CURRENT
+    def set_current(self, run_current, hold_current, print_time):
         vsense, irun, ihold = self._calc_current(run_current, hold_current)
         if vsense != self.fields.get_field("vsense"):
             val = self.fields.set_field("vsense", vsense)
@@ -257,10 +240,11 @@ class TMC2130:
         # Allow virtual pins to be created
         tmc.TMCVirtualPinHelper(config, self.mcu_tmc)
         # Register commands
-        cmdhelper = tmc.TMCCommandHelper(config, self.mcu_tmc)
+        current_helper = TMCCurrentHelper(config, self.mcu_tmc)
+        cmdhelper = tmc.TMCCommandHelper(config, self.mcu_tmc, current_helper,
+                                         clear_gstat=False)
         cmdhelper.setup_register_dump(ReadRegisters)
         # Setup basic register values
-        TMCCurrentHelper(config, self.mcu_tmc)
         mh = tmc.TMCMicrostepHelper(config, self.mcu_tmc)
         self.get_microsteps = mh.get_microsteps
         self.get_phase = mh.get_phase
