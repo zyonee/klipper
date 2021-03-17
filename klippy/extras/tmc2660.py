@@ -58,7 +58,7 @@ Fields["DRVCONF"] = {
 }
 
 Fields["READRSP@RDSEL0"] = {
-    "SG": 0x01 << 4,
+    "stallGuard": 0x01 << 4,
     "ot": 0x01 << 5,
     "otpw": 0x01 << 6,
     "s2ga": 0x01 << 7,
@@ -70,7 +70,7 @@ Fields["READRSP@RDSEL0"] = {
 }
 
 Fields["READRSP@RDSEL1"] = {
-    "SG": 0x01 << 4,
+    "stallGuard": 0x01 << 4,
     "ot": 0x01 << 5,
     "otpw": 0x01 << 6,
     "s2ga": 0x01 << 7,
@@ -78,11 +78,11 @@ Fields["READRSP@RDSEL1"] = {
     "ola": 0x01 << 9,
     "olb": 0x01 << 10,
     "stst": 0x01 << 11,
-    "SG@RDSEL1": 0x3ff << 14
+    "SG_RESULT": 0x3ff << 14
 }
 
 Fields["READRSP@RDSEL2"] = {
-    "SG": 0x01 << 4,
+    "stallGuard": 0x01 << 4,
     "ot": 0x01 << 5,
     "otpw": 0x01 << 6,
     "s2ga": 0x01 << 7,
@@ -91,7 +91,7 @@ Fields["READRSP@RDSEL2"] = {
     "olb": 0x01 << 10,
     "stst": 0x01 << 11,
     "SE": 0x1f << 14,
-    "SG@RDSEL2": 0x1f << 19
+    "SG_RESULT@RDSEL2": 0x1f << 19
 }
 
 SignedFields = ["SGT"]
@@ -100,10 +100,10 @@ FieldFormatters = dict(tmc2130.FieldFormatters)
 FieldFormatters.update({
     "DEDGE": (lambda v: "1(Both Edges Active!)" if v else ""),
     "CHM": (lambda v: "1(constant toff)" if v else "0(spreadCycle)"),
-    "VSENSE": (lambda v: "%d(%dmV)" % (v, 165 if v else 305)),
+    "VSENSE": (lambda v: "1(165mV)" if v else "0(305mV)"),
     "SDOFF": (lambda v: "1(Step/Dir disabled!)" if v else ""),
-    "DISS2G": (lambda v: "%d(Short to GND disabled!)" if v else ""),
-    "SG": (lambda v: "1(Stall!)" if v else ""),
+    "DISS2G": (lambda v: "1(Short to GND disabled!)" if v else ""),
+    "SE": (lambda v: ("%d" % v) if v else "0(Reset?)"),
 })
 
 
